@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Leaf Base Body (Deep Natural Green) -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M20,88 C16,84 28,52 50,34 C72,16 88,12 92,16 C92,18 88,34 70,56 C52,78 26,90 20,88 Z" />
+
+    <!-- Light Leaf Highlight Half (Upper Layer) -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M20,88 C16,84 28,52 50,34 C72,16 88,12 92,16 C76,26 56,46 20,88 Z" />
+
+    <!-- Stem and Central Vein -->
+    <path
+        android:strokeColor="#1B5E20"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M15,93 Q 20,88 32,74 T 58,46 T 92,16" />
+
+    <!-- Side Veins (Upper Leaf) -->
+    <path
+        android:strokeColor="#2E7D32"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M38,68 C 42,60 48,56 55,54 M 48,56 C 54,48 62,44 70,41 M 60,44 C 66,36 74,32 82,29" />
+
+    <!-- Side Veins (Lower Leaf) -->
+    <path
+        android:strokeColor="#1B5E20"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M32,74 C 36,78 40,82 44,82 M 46,58 C 52,64 58,68 64,68 M 60,44 C 68,52 74,54 80,52" />
+</vector>

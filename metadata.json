@@ -1,0 +1,6 @@
+{
+  "name": "Linko",
+  "description": "Linko messaging and connectivity app featuring push notifications, QR scan contact sync, group management, audio notes, and rich messaging.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

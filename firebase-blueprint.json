@@ -1,0 +1,141 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile document",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID or local user ID" },
+        "email": { "type": "string", "format": "email", "description": "Normalized user email address" },
+        "displayName": { "type": "string", "description": "Display name shown in chats and groups" },
+        "username": { "type": "string", "description": "Unique handle without @" },
+        "avatarUri": { "type": "string", "description": "Avatar image URI" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of account creation" },
+        "lastSeen": { "type": "string", "format": "date-time", "description": "Server timestamp of last activity" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Contact": {
+      "title": "Contact",
+      "description": "User contact entry synced across devices",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userEmail": { "type": "string", "format": "email" },
+        "contactUserId": { "type": "string" },
+        "contactEmail": { "type": "string", "format": "email" },
+        "contactDisplayName": { "type": "string" },
+        "contactUsername": { "type": "string" },
+        "contactStatus": { "type": "string" },
+        "contactAvatarUri": { "type": "string" },
+        "addedTimestamp": { "type": "number" }
+      },
+      "required": ["id", "userEmail", "contactEmail"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "Direct conversation, multi-member group chat, or broadcast channel",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique chat or group channel ID" },
+        "name": { "type": "string", "description": "Group, channel, or conversation title" },
+        "isGroup": { "type": "boolean", "description": "True for group chats and channels" },
+        "channelType": { "type": "string", "enum": ["DIRECT", "GROUP", "CHANNEL"], "description": "Conversation mode" },
+        "groupDescription": { "type": "string", "description": "Channel topic or group purpose" },
+        "groupIconUri": { "type": "string", "description": "Optional group/channel avatar URI" },
+        "creatorId": { "type": "string", "description": "User ID of the channel/group creator" },
+        "participantIds": { "type": "array", "description": "List of member user IDs in the conversation" },
+        "participantEmails": { "type": "array", "description": "List of member email addresses invited to the conversation" },
+        "adminIds": { "type": "array", "description": "List of administrator user IDs" },
+        "inviteCode": { "type": "string", "description": "Shareable invite code for joining the group or channel" },
+        "lastMessageText": { "type": "string", "description": "Preview snippet of the most recent message" },
+        "lastMessageTimestamp": { "type": "number", "description": "Epoch millis of the latest message" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp when group was created" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp when group was last updated" }
+      },
+      "required": ["id", "name", "isGroup", "participantIds"]
+    },
+    "GroupInvitation": {
+      "title": "GroupInvitation",
+      "description": "Invitation record when inviting contacts to a group or channel conversation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique invitation ID" },
+        "chatId": { "type": "string", "description": "Target group or channel ID" },
+        "groupName": { "type": "string", "description": "Name of the group or channel" },
+        "channelType": { "type": "string", "enum": ["GROUP", "CHANNEL"], "description": "Type of group conversation" },
+        "inviterId": { "type": "string", "description": "User ID of the sender who invited the contact" },
+        "inviterName": { "type": "string", "description": "Display name of the inviter" },
+        "inviteeUserId": { "type": "string", "description": "User ID of the invited contact" },
+        "inviteeEmail": { "type": "string", "format": "email", "description": "Email address of the invited contact" },
+        "status": { "type": "string", "enum": ["INVITED", "JOINED", "DECLINED"], "description": "Invitation status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of the invitation" }
+      },
+      "required": ["id", "chatId", "groupName", "inviterId", "inviteeEmail", "status"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Encrypted message in a direct, group, or channel thread",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderEmail": { "type": "string" },
+        "text": { "type": "string" },
+        "mediaUri": { "type": "string" },
+        "mediaType": { "type": "string" },
+        "formattedRichText": { "type": "string" },
+        "status": { "type": "string", "enum": ["sent", "delivered", "read"], "description": "3-stage WhatsApp-style receipt status: sent (single gray tick), delivered (double gray tick), read (double blue tick)" },
+        "clientTimestamp": { "type": "number" },
+        "sentAt": { "type": "string", "format": "date-time" },
+        "deliveredAt": { "type": "string", "format": "date-time" },
+        "readAt": { "type": "string", "format": "date-time" },
+        "isEncrypted": { "type": "boolean" },
+        "participants": { "type": "array" }
+      },
+      "required": ["id", "chatId", "senderId", "text", "status"]
+    },
+    "UserPresence": {
+      "title": "UserPresence",
+      "description": "Real-time online presence status",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "userId": { "type": "string" },
+        "online": { "type": "boolean" },
+        "isOnline": { "type": "boolean" },
+        "lastSeen": { "type": "number" },
+        "lastActive": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "online"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile documents keyed by user ID"
+    },
+    "/user_contacts/{contactId}": {
+      "schema": "Contact",
+      "description": "Synced user contact entries"
+    },
+    "/chats/{chatId}": {
+      "schema": "Chat",
+      "description": "Direct chats, multi-member group chats, and broadcast channels"
+    },
+    "/group_invitations/{invitationId}": {
+      "schema": "GroupInvitation",
+      "description": "Group and channel member invitation records"
+    },
+    "/chat_messages/{messageId}": {
+      "schema": "Message",
+      "description": "Encrypted chat and group messages with delivery/read receipts"
+    },
+    "/user_presence/{email}": {
+      "schema": "UserPresence",
+      "description": "Real-time user online status documents"
+    }
+  }
+}

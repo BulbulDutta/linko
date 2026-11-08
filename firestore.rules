@@ -1,0 +1,130 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidUser(data) {
+      return data.uid is string
+        && data.uid.size() > 0
+        && data.uid.size() <= 128
+        && data.email is string
+        && data.email.size() > 0
+        && data.email.size() <= 256;
+    }
+
+    function isValidContact(data) {
+      return data.id is string
+        && data.id.size() > 0
+        && data.id.size() <= 128
+        && data.userEmail is string
+        && data.userEmail.size() > 0
+        && data.userEmail.size() <= 256
+        && data.contactEmail is string
+        && data.contactEmail.size() > 0
+        && data.contactEmail.size() <= 256;
+    }
+
+    function isValidChat(data) {
+      return (!('id' in data) || (data.id is string && data.id.size() > 0 && data.id.size() <= 128))
+        && (!('name' in data) || (data.name is string && data.name.size() <= 256))
+        && (!('isGroup' in data) || data.isGroup is bool)
+        && (!('participantIds' in data) || (data.participantIds is list && data.participantIds.size() <= 500));
+    }
+
+    function isValidInvitation(data) {
+      return data.id is string
+        && data.id.size() > 0
+        && data.id.size() <= 128
+        && data.chatId is string
+        && data.chatId.size() <= 128
+        && data.groupName is string
+        && data.groupName.size() <= 256
+        && data.inviterId is string
+        && data.inviterId.size() <= 128
+        && data.inviteeEmail is string
+        && data.inviteeEmail.size() <= 256
+        && data.status is string
+        && data.status.size() <= 64;
+    }
+
+    function isValidMessage(data) {
+      return data.id is string
+        && data.id.size() > 0
+        && data.id.size() <= 128
+        && data.chatId is string
+        && data.chatId.size() > 0
+        && data.chatId.size() <= 128
+        && data.senderId is string
+        && data.senderId.size() > 0
+        && data.senderId.size() <= 128
+        && data.text is string
+        && data.text.size() <= 10000
+        && (!('status' in data) || (data.status is string && data.status in ['sent', 'delivered', 'read', 'SENT', 'DELIVERED', 'READ']));
+    }
+
+    function isValidPresence(data) {
+      return data.email is string
+        && data.email.size() > 0
+        && data.email.size() <= 256
+        && (('online' in data && data.online is bool) || ('isOnline' in data && data.isOnline is bool))
+        && (!('userId' in data) || (data.userId is string && data.userId.size() <= 128));
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId) && isValidUser(request.resource.data);
+      allow delete: if isOwner(userId);
+
+      match /contacts/{contactId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    match /user_contacts/{contactId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidContact(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+
+    match /chats/{chatId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidChat(request.resource.data);
+      allow delete: if isAuthenticated();
+
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create, update: if isAuthenticated() && isValidMessage(request.resource.data);
+        allow delete: if isAuthenticated();
+      }
+    }
+
+    match /group_invitations/{invitationId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidInvitation(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+
+    match /chat_messages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidMessage(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+
+    match /user_presence/{email} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidPresence(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+  }
+}

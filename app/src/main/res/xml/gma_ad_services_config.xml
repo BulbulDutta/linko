@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ad-services-config>
+    <!-- Privacy Sandbox configuration for Android 13+ (API 33+) -->
+    <!-- Note: Measurement / Attribution service binding is excluded to prevent onNullBinding MEASUREMENT_SERVICE on devices and emulators where the daemon is not active -->
+</ad-services-config>
